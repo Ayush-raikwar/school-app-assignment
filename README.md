@@ -17,14 +17,17 @@ Home page / Timetable screen ---> <img width="409" alt="1" src="https://github.c
 
    **Role - Student** -
    2) Once user selects "Student", Student home page will be shown ---> <img width="411" alt="student home" src="https://github.com/user-attachments/assets/bd4e5284-402f-4888-b828-9374fc387944" />
+   
      A student can only view Time tables in a list.
      3) Student can also View Courses by presssing COURSES button.
      4) Courses screen (Student View) ---> <img width="410" alt="student courses" src="https://github.com/user-attachments/assets/f3f31922-c593-4a3d-8cde-04e40655be55" />
+     
         Similar to Timetable screen, a Student is confined to only View the Courses.
 
   **Role - Teacher** - 
 
   5) If user Selects "I AM A TEACHER", then a TextInput field will popup, asking for Passcode. ---> <img width="409" alt="teacher prompt" src="https://github.com/user-attachments/assets/d1239fd1-0d89-4a13-9165-214bbf5250ab" />
+  
   
      **IMPORTANT - Please Enter "1234" as passcode**
      
@@ -33,9 +36,12 @@ Home page / Timetable screen ---> <img width="409" alt="1" src="https://github.c
   
   8) MANAGE TIMETABLE button takes us to another screen, where a Teacher can ADD or DELETE a timetable entry. ---> <img width="407" alt="mange timetable" src="https://github.com/user-attachments/assets/54416483-0c30-4cc5-8a73-e6aee15f0a2e" />
 
+
   9) Teacher should enter a Subject, pick a Date & Timeslot for the timetable. ---> <img width="406" alt="date n time select" src="https://github.com/user-attachments/assets/802bde3b-9127-4a84-9296-903a27d937cd" />
 
+
   10) Teacher's Course Screen ---> <img width="409" alt="teacher course scren" src="https://github.com/user-attachments/assets/bcb87bc9-a10b-4496-ac59-bc9bf68e89e0" />
+
 
   11) A Teacher can ADD/UPDATE a course ---> <img width="410" alt="teacher course edit" src="https://github.com/user-attachments/assets/a05a6601-6fb7-4bd3-be7a-ab36ce57677e" />
 

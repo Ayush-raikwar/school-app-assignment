@@ -11,6 +11,6 @@ export const constants = {
         TIME_TABLE:'Timetable',
         MANAGE_TIMETABLE:'ManageTimetable',
         COURSE_DETAILS:'CourseDetails',
-        CHAT:'Chat'
+        AI_CHAT:'AiChat'
     }
 }

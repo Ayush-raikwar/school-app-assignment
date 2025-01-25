@@ -5,6 +5,7 @@ import {CourseDetailsScreen} from '../screens/CourseDetailsScreen'
 import {ChatScreen} from '../screens/ChatScreen'
 import { createStackNavigator } from "@react-navigation/stack"
 import { constants } from "../constants"
+import { AiChatScreen } from "../screens/AiChatScreen"
 
 export const Routes = () => {
     const Stack = createStackNavigator()
@@ -14,7 +15,7 @@ export const Routes = () => {
                 <Stack.Screen name={constants.screens.TIME_TABLE} component={TimetableScreen} />
                 <Stack.Screen name={constants.screens.MANAGE_TIMETABLE} component={ManageTimetableScreen} />
                 <Stack.Screen name={constants.screens.COURSE_DETAILS} component={CourseDetailsScreen} />
-                <Stack.Screen name={constants.screens.CHAT} component={ChatScreen} />
+                <Stack.Screen name={constants.screens.AI_CHAT} component={AiChatScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     )

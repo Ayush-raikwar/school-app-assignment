@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, StyleSheet, Alert } from 'react-native';
-import { TextInput, Menu, Provider } from 'react-native-paper';
+import { View, Text, FlatList, Button, StyleSheet, Alert, Modal, TextInput, TouchableOpacity } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import { ButtonCustom } from '../components/ButtonCustom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { constants } from '../constants'; // Assuming you have constants defined
+import { constants } from '../constants'; 
+import { Title } from '../components/Title';
 
 export const ManageTimetableScreen = () => {
   const [timetable, setTimetable] = useState([]);
   const [subject, setSubject] = useState('');
   const [time, setTime] = useState('');
   const [date, setDate] = useState(new Date());
-  const [menuVisible, setMenuVisible] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [showAddTableModal, setShowAddTableModal] = useState(false)
+
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const timeOptions = ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM'];
 
-  // Load timetable from AsyncStorage when the component mounts
+  
   useEffect(() => {
     const fetchTimetable = async () => {
       try {
@@ -32,7 +35,7 @@ export const ManageTimetableScreen = () => {
     fetchTimetable();
   }, []);
 
-  // Save the timetable to AsyncStorage
+  
   const saveTimetable = async (updatedTimetable) => {
     try {
       await AsyncStorage.setItem(constants.TIME_TABLE, JSON.stringify(updatedTimetable));
@@ -41,7 +44,7 @@ export const ManageTimetableScreen = () => {
     }
   };
 
-  // Add a new timetable entry
+  
   const addTimetableEntry = () => {
     if (!subject || !time || !date) {
       Alert.alert('Error', 'All fields are required');
@@ -54,90 +57,46 @@ export const ManageTimetableScreen = () => {
         id: Date.now().toString(),
         subject,
         time,
-        date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        date: date.toISOString().split('T')[0], 
       },
     ];
 
     setTimetable(newTimetable);
-    saveTimetable(newTimetable); // Save to AsyncStorage
+    saveTimetable(newTimetable); 
     setSubject('');
     setTime('');
     setDate(new Date());
+    setShowAddTableModal(false)
   };
 
-  // Delete a timetable entry
+  
   const deleteTimetableEntry = (id) => {
     const updatedTimetable = timetable.filter((entry) => entry.id !== id);
     setTimetable(updatedTimetable);
-    saveTimetable(updatedTimetable); // Save to AsyncStorage
+    saveTimetable(updatedTimetable); 
+  };
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+    setDropdownVisible(false);
+    setTime(option)
   };
 
   return (
-    <Provider>
+    <>
       <View style={styles.container}>
         <Text style={styles.heading}>Manage Timetable</Text>
 
-        {/* Subject Input */}
-        <TextInput
-          label="Subject"
-          mode="outlined"
-          value={subject}
-          onChangeText={setSubject}
-          style={styles.input}
-        />
-
-        {/* Date Button */}
-        <View style={styles.datePicker}>
-          <ButtonCustom 
-              title={`Select Date: ${date.toISOString().split('T')[0]}`}
-              onPress={() => setOpenDatePicker(true)}
-             />
-          <DatePicker
-            modal
-            open={openDatePicker}
-            date={date}
-            mode='date'
-            onConfirm={(selectedDate) => {
-              setDate(selectedDate);
-              setOpenDatePicker(false);
-            }}
-            onCancel={() => setOpenDatePicker(false)}
-          />
-        </View>
-
-        {/* Time Button */}
-        <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
-          anchor={
-            <ButtonCustom 
-              title={time || 'Select Time'}
-              onPress={() => setMenuVisible(true)}
-             />
-          }
-        >
-          {timeOptions.map((option, index) => (
-            <Menu.Item
-              key={index}
-              onPress={() => {
-                setTime(option);
-                setMenuVisible(false);
-              }}
-              title={option}
-            />
-          ))}
-        </Menu>
-
-        {/* Add Timetable Entry */}
-        <ButtonCustom title="Add Timetable Entry" onPress={addTimetableEntry}/>
-
-        {/* Timetable List */}
+        <Title text={'Time Tables'} />
         <FlatList
           data={timetable}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.timetableEntry}>
-              <Text>{`${item.subject} - ${item.time} (${item.date})`}</Text>
+            <View style={styles.card}>
+              <View style={styles.cardContent}>
+                <Text style={styles.subject}>{item.subject}</Text>
+                <Text style={styles.time}>Time: {item.time}</Text>
+                <Text style={styles.date}>Date: {item.date}</Text>
+              </View>
               <Button
                 title="Delete"
                 onPress={() => deleteTimetableEntry(item.id)}
@@ -146,12 +105,86 @@ export const ManageTimetableScreen = () => {
             </View>
           )}
         />
+
+        <ButtonCustom title="Add Timetable Entry" onPress={() => {
+          setShowAddTableModal(true)
+        }} />
+
       </View>
-    </Provider>
+      <Modal visible={showAddTableModal} transparent animationType="slide">
+
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Title text={'Add a timetable'} />
+            <TextInput
+              value={subject}
+              onChangeText={setSubject}
+              style={styles.input}
+              placeholder='Subject Name'
+            />
+
+            <View style={styles.datePicker}>
+              <ButtonCustom
+                title={`Select Date: ${date.toISOString().split('T')[0]}`}
+                onPress={() => setOpenDatePicker(true)}
+              />
+              <DatePicker
+                modal
+                open={openDatePicker}
+                date={date}
+                mode='date'
+                onConfirm={(selectedDate) => {
+                  setDate(selectedDate);
+                  setOpenDatePicker(false);
+                }}
+                onCancel={() => setOpenDatePicker(false)}
+              />
+            </View>
+
+            <ButtonCustom dropdownBtn title={selectedOption || "Pick a Time slot"} onPress={() => setDropdownVisible((prev) => !prev)} />
+
+            {isDropdownVisible && (
+              <View style={styles.dropdownContainer}>
+                <FlatList
+                  data={timeOptions}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.option}
+                      onPress={() => handleOptionSelect(item)}>
+                      <Text style={styles.optionText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            )}
+            <ButtonCustom title={'Add entry'} onPress={addTimetableEntry} />
+          </View>
+        </View>
+
+
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  dropdownContainer: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    width: "100%",
+    maxHeight: 150,
+  },
+  option: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  optionText: {
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -163,9 +196,14 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 10,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,.4)',
+    borderRadius: 4,
+    padding: 8
   },
   datePicker: {
-    marginVertical: 10,
+    marginVertical: 10, width:'100%'
   },
   timetableEntry: {
     flexDirection: 'row',
@@ -174,5 +212,52 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderColor: '#ddd',
+  },
+  card: {
+    backgroundColor: '#f5f5f5',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth:.5,
+    borderColor:'rgba(0,0,0,.2)'
+  },
+  cardContent: {
+    flex: 1,
+  },
+  subject: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  time: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  date: {
+    fontSize: 14,
+    color: '#777',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
   },
 });
